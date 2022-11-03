@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/setup-node@v1
       with:
-        node-version: 12.x
+        node-version: 16.x
 
     - uses: actions/checkout@v2
     
@@ -26,10 +26,10 @@ jobs:
       id: info
       run: |
         if [ '${{ github.event_name }}' = 'pull_request' ]; then
-          echo '::set-output name=commit_message::'
+          echo "commit_message=" >> $GITHUB_OUTPUT
           exit 0
         fi
-        echo '::set-output name=commit_message::[auto]'
+        echo "commit_message=[auto]" >> $GITHUB_OUTPUT
 
     - uses: satackey/push-prebuilt-action@v0.2.0-beta3
       with:
@@ -127,10 +127,10 @@ jobs:
 
     - run: ${{ matrix.prepare_command }}
 
-    - name: Extract
-      id: extract
-      run: |
-        echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+    # - name: Extract
+    #   id: extract
+    #   run: |
+    #     echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
 
     - name: Download action
       uses: actions/download-artifact@v2
@@ -149,7 +149,7 @@ jobs:
       run: docker inspect ${{ matrix.inspect_image }}
 
     - name: Get cached image ID
-      run: echo ::set-output name=id::$(docker image ls -q ${{ matrix.inspect_image }})
+      run: echo "id=$(docker image ls -q ${{ matrix.inspect_image }})" >> $GITHUB_OUTPUT
       id: cached
 
     - run: ${{ matrix.build_command }}
@@ -158,7 +158,7 @@ jobs:
       run: docker inspect ${{ matrix.inspect_image }}
 
     - name: Show built image ID
-      run: echo ::set-output name=id::$(docker image ls -q ${{ matrix.inspect_image }})
+      run: echo "id=$(docker image ls -q ${{ matrix.inspect_image }})" >> $GITHUB_OUTPUT
       id: latest
 
     - name: Compare cached ID and after build ID

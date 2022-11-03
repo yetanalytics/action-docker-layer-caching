@@ -104,8 +104,8 @@ jobs:
     - name: Show cached image info
       run: docker inspect ${{ matrix.inspect_image }}
 
-    - name: Get cached image ID
-      run: echo ::set-output name=id::$(docker image ls -q ${{ matrix.inspect_image }})
+    - name: Get cached image ID 
+      run: echo "id=$(docker image ls -q ${{ matrix.inspect_image }})" >> $GITHUB_OUTPUT
       id: cached
 
     - run: ${{ matrix.build_command }}
@@ -114,7 +114,7 @@ jobs:
       run: docker inspect ${{ matrix.inspect_image }}
 
     - name: Show built image ID
-      run: echo ::set-output name=id::$(docker image ls -q ${{ matrix.inspect_image }})
+      run: echo "id=$(docker image ls -q ${{ matrix.inspect_image }})" >> $GITHUB_OUTPUT
       id: latest
 
     - name: Compare cached ID and after build ID
